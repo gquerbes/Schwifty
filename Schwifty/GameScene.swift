@@ -9,10 +9,13 @@
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    //ball
-    var ball:SKSpriteNode!
-    var ballWidth:CGFloat = 100.0
+    //paddle
+    var paddle:SKSpriteNode!
+    var paddleWidth:CGFloat = 100.0
     
+    //walls
+    var leftWall: SKSpriteNode!
+    var rightWall: SKSpriteNode!
     
     //location of touch 
     var touchLocation: CGPoint = CGPoint(x: 768, y: 0)
@@ -27,8 +30,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     struct PhysicsCategory {
         static let none : UInt32 = 0
         static let all : UInt32 = UInt32.max
-        static let ball : UInt32 = 0x1       // 1
+        static let paddle : UInt32 = 0x1 << 0    // 1
         static let obstacle : UInt32 = 0x1 << 1      // 2
+        static let powerUp : UInt32 = 0x1 << 2    // 4
+        static let walls : UInt32 = 0x1 << 3
     }
     
     
@@ -43,11 +48,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
     
         
-        //set ball in code
-        ball = self.childNodeWithName("ball") as! SKSpriteNode
-        setBallProperties()
+        //set paddle
+        paddle = SKSpriteNode (imageNamed: "paddle_100x100")
+        paddle.position = (CGPointMake(CGRectGetMidX(self.frame), 400.0))
+        self.addChild(paddle)
+        setPaddleProperties()
         
         
+        //set Walls
+        leftWall = self.childNodeWithName("leftWall") as! SKSpriteNode
+        rightWall = self.childNodeWithName("rightWall") as! SKSpriteNode
+        setWallProperties()
         
         //score label
         currentScoreLabel = SKLabelNode(fontNamed: "Ariel")
@@ -61,29 +72,62 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addObstacles),
-                SKAction.waitForDuration(0.3 )
+                SKAction.waitForDuration(0.2 )
                 ])
             ))
         
+        runAction(SKAction.repeatActionForever(
+            SKAction.sequence([
+                SKAction.runBlock(addPowerUp),
+                SKAction.waitForDuration(10.0 )
+                ])
+            ))
+
     }
     
+
     
-    func setBallProperties(){
+    func setPaddleProperties(){
+        paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddle.size.height))
         
-//        ball.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: ballWidth, height: 100))
+        paddle.size.width = paddleWidth
         
-        ball.size.width = ballWidth
         //category for obstacle
-        ball.physicsBody?.categoryBitMask = PhysicsCategory.ball
+        paddle.physicsBody?.categoryBitMask = PhysicsCategory.paddle
         //sprites that collisons will trigger event
-        ball.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle
+        paddle.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle | PhysicsCategory.powerUp
         //sprites that will physically react to collison
-        ball.physicsBody?.collisionBitMask = PhysicsCategory.obstacle
-        ball.physicsBody?.affectedByGravity = false
-        ball.physicsBody?.dynamic = false
-        
-        print(ball.size.width)
+        paddle.physicsBody?.collisionBitMask = PhysicsCategory.obstacle | PhysicsCategory.powerUp | PhysicsCategory.walls
+        paddle.physicsBody?.affectedByGravity = false
+        paddle.physicsBody?.dynamic = false
     }
+    
+    
+    func setWallProperties(){
+        leftWall.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: 100, height: 2048))
+        
+        //rightWall.physicsBody = leftWall.physicsBod
+        
+        leftWall.physicsBody?.categoryBitMask = PhysicsCategory.walls
+        leftWall.physicsBody?.collisionBitMask = PhysicsCategory.paddle
+        leftWall.physicsBody?.affectedByGravity = false
+        leftWall.physicsBody?.dynamic = false
+        
+        
+    }
+    /**
+      adds powerUp object to scene
+    */
+    func addPowerUp(){
+        let powerUp = SKSpriteNode(imageNamed: "object1")
+        powerUp.position = randomXInView()
+        powerUp.physicsBody = SKPhysicsBody(circleOfRadius: powerUp.size.width)
+        powerUp.physicsBody?.affectedByGravity = true
+        powerUp.physicsBody?.categoryBitMask = PhysicsCategory.powerUp
+        
+        self.addChild(powerUp)
+    }
+    
     /**
      Add obstacles to screen
     */
@@ -110,7 +154,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     /**
-     - Returns:randomized X coordinate within frame
+     - Returns:randomized X coordinate within frame at Y position 2000
     */
     func randomXInView() -> CGPoint{
         let sizeX = Int(CGRectGetMaxX(self.frame) + 15)
@@ -130,24 +174,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func didBeginContact(contact: SKPhysicsContact) {
         
-        let ball = (contact.bodyA.categoryBitMask == PhysicsCategory.ball) ? contact.bodyA : contact.bodyB
+        let paddle = (contact.bodyA.categoryBitMask == PhysicsCategory.paddle) ? contact.bodyA : contact.bodyB
         
-        let other = (ball == contact.bodyA) ? contact.bodyB : contact.bodyA
+        let other = (paddle == contact.bodyA) ? contact.bodyB : contact.bodyA
         
-        //handle obstacle hitting ball
+        //handle obstacle hitting paddle
         if other.categoryBitMask == PhysicsCategory.obstacle{
             other.node?.removeFromParent()
-            increaseBallSize()
-            print()
+            increasePaddleSize()
+            print("obstacle hit")
         }
+        else if other.categoryBitMask == PhysicsCategory.powerUp{
+            other.node?.removeFromParent()
+            decreasePaddleSize()
+            print("powerUp hit")
+        }
+        
     }
     
-    func increaseBallSize(){
-        ballWidth+=20
-        setBallProperties()
-        
-        
+    func increasePaddleSize(){
+        paddleWidth+=20
+        setPaddleProperties()
     }
+    func decreasePaddleSize(){
+        paddleWidth-=20
+        setPaddleProperties()
+    }
+    
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
         touchLocation = touches.first!.locationInNode(self)
@@ -163,9 +216,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //location of touch
         let location = touchLocation.x
         
-        //move ball to location of touch
+        //move paddle to location of touch
         let move = SKAction.moveToX(location, duration: 0.1)//adjust tracking speed
-        ball.runAction(move)
+        paddle.runAction(move)
         
     
     }
