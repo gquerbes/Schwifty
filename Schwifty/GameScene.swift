@@ -30,7 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     struct PhysicsCategory {
         static let none : UInt32 = 0
         static let all : UInt32 = UInt32.max
-        static let paddle : UInt32 = 0x1 << 0    // 1
+        static let paddle : UInt32 = 0x1     // 1
         static let obstacle : UInt32 = 0x1 << 1      // 2
         static let powerUp : UInt32 = 0x1 << 2    // 4
         static let walls : UInt32 = 0x1 << 3
@@ -44,13 +44,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         /* Setup your scene here */
         
         //physics
-        physicsWorld.gravity = CGVectorMake(0, -10)
+        physicsWorld.gravity = CGVectorMake(0, -20)
         physicsWorld.contactDelegate = self
     
         
         //set paddle
         paddle = SKSpriteNode (imageNamed: "paddle_100x100")
-        paddle.position = (CGPointMake(CGRectGetMidX(self.frame), 400.0))
+        paddle.position = (CGPointMake(CGRectGetMidX(self.frame), 600.0))
         self.addChild(paddle)
         setPaddleProperties()
         
@@ -58,6 +58,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //set Walls
         leftWall = self.childNodeWithName("leftWall") as! SKSpriteNode
         rightWall = self.childNodeWithName("rightWall") as! SKSpriteNode
+        
         setWallProperties()
         
         //score label
@@ -79,7 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addPowerUp),
-                SKAction.waitForDuration(10.0 )
+                SKAction.waitForDuration(6.0 )
                 ])
             ))
 
@@ -88,30 +89,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     
     func setPaddleProperties(){
+        //set physics body of paddle
         paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddle.size.height))
         
+        //set physical size of paddle
         paddle.size.width = paddleWidth
         
-        //category for obstacle
+        //category for paddle
         paddle.physicsBody?.categoryBitMask = PhysicsCategory.paddle
         //sprites that collisons will trigger event
-        paddle.physicsBody?.contactTestBitMask = PhysicsCategory.obstacle | PhysicsCategory.powerUp
-        //sprites that will physically react to collison
-        paddle.physicsBody?.collisionBitMask = PhysicsCategory.obstacle | PhysicsCategory.powerUp | PhysicsCategory.walls
+        paddle.physicsBody?.contactTestBitMask =  PhysicsCategory.powerUp | PhysicsCategory.obstacle
+        //sprites that will physically react to collision
+        paddle.physicsBody?.collisionBitMask = PhysicsCategory.walls
+        
         paddle.physicsBody?.affectedByGravity = false
-        paddle.physicsBody?.dynamic = false
+        paddle.physicsBody?.dynamic = true
+        paddle.physicsBody?.allowsRotation = false
     }
     
     
     func setWallProperties(){
+        //wall physics body
         leftWall.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: 100, height: 2048))
+        rightWall.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: 100, height: 2048))
         
-        //rightWall.physicsBody = leftWall.physicsBod
-        
+        //category bit masks
         leftWall.physicsBody?.categoryBitMask = PhysicsCategory.walls
+        rightWall.physicsBody?.categoryBitMask = PhysicsCategory.walls
+        
+        //collision bit masks
         leftWall.physicsBody?.collisionBitMask = PhysicsCategory.paddle
+        rightWall.physicsBody?.collisionBitMask = PhysicsCategory.paddle
+        
+        //gravity properties
         leftWall.physicsBody?.affectedByGravity = false
+        rightWall.physicsBody?.affectedByGravity = false
+        
         leftWall.physicsBody?.dynamic = false
+        rightWall.physicsBody?.dynamic = false
+        
         
         
     }
@@ -121,7 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addPowerUp(){
         let powerUp = SKSpriteNode(imageNamed: "object1")
         powerUp.position = randomXInView()
-        powerUp.physicsBody = SKPhysicsBody(circleOfRadius: powerUp.size.width)
+        powerUp.physicsBody = SKPhysicsBody(circleOfRadius: powerUp.size.width/2)
         powerUp.physicsBody?.affectedByGravity = true
         powerUp.physicsBody?.categoryBitMask = PhysicsCategory.powerUp
         
@@ -142,9 +158,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         obstacle.position = randomXInView()
         
         //set obstacle
-        obstacle.physicsBody = SKPhysicsBody(circleOfRadius: obstacle.size.width)
+        obstacle.physicsBody = SKPhysicsBody(circleOfRadius: obstacle.size.width/2)
         obstacle.physicsBody?.affectedByGravity = true
         obstacle.physicsBody?.categoryBitMask = PhysicsCategory.obstacle
+        obstacle.physicsBody?.collisionBitMask = PhysicsCategory.walls
         self.addChild(obstacle)
         
         
@@ -182,12 +199,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if other.categoryBitMask == PhysicsCategory.obstacle{
             other.node?.removeFromParent()
             increasePaddleSize()
-            print("obstacle hit")
+           
         }
         else if other.categoryBitMask == PhysicsCategory.powerUp{
             other.node?.removeFromParent()
             decreasePaddleSize()
-            print("powerUp hit")
+            
         }
         
     }
@@ -195,6 +212,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func increasePaddleSize(){
         paddleWidth+=20
         setPaddleProperties()
+        
     }
     func decreasePaddleSize(){
         paddleWidth-=20
@@ -219,6 +237,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //move paddle to location of touch
         let move = SKAction.moveToX(location, duration: 0.1)//adjust tracking speed
         paddle.runAction(move)
+       
         
     
     }
