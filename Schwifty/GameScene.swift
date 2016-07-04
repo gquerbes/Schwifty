@@ -5,13 +5,24 @@
 //  Created by Gabriel Querbes on 6/28/16.
 //  Copyright (c) 2016 Fourteen66. All rights reserved.
 //
+/* MARK: TODO
+    1. Add variable speed with stages
+    2. Add new powerUp to return to original size?
+    3. Moving wallpaper
+    4. Track high score
+    5. Start Screen
+    6. End of game logic
+    7. Improved scoring system
+    8. Place objects into seperate files
+ */
 
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     //paddle
     var paddle:SKSpriteNode!
-    var paddleWidth:CGFloat = 100.0
+    var paddleWidth:CGFloat = 40
+    var paddleHeight: CGFloat = 40
     
     //walls
     var leftWall: SKSpriteNode!
@@ -73,10 +84,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addObstacles),
-                SKAction.waitForDuration(0.2 )
+                SKAction.waitForDuration(0.4 )
                 ])
             ))
         
+        // call and repeat action of presenting powerUps
         runAction(SKAction.repeatActionForever(
             SKAction.sequence([
                 SKAction.runBlock(addPowerUp),
@@ -90,10 +102,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setPaddleProperties(){
         //set physics body of paddle
-        paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddle.size.height))
+        paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddleHeight))
         
         //set physical size of paddle
         paddle.size.width = paddleWidth
+        paddle.size.height = paddleHeight
         
         //category for paddle
         paddle.physicsBody?.categoryBitMask = PhysicsCategory.paddle
@@ -125,6 +138,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftWall.physicsBody?.affectedByGravity = false
         rightWall.physicsBody?.affectedByGravity = false
         
+        //affected by physics
         leftWall.physicsBody?.dynamic = false
         rightWall.physicsBody?.dynamic = false
         
