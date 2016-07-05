@@ -21,8 +21,9 @@ import SpriteKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     //paddle
     var paddle:SKSpriteNode!
-    var paddleWidth:CGFloat = 40
-    var paddleHeight: CGFloat = 40
+    let paddleObj = Paddle()
+//    var paddleWidth:CGFloat = 40
+//    var paddleHeight: CGFloat = 40
     
     //walls
     var leftWall: SKSpriteNode!
@@ -57,13 +58,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //physics
         physicsWorld.gravity = CGVectorMake(0, -20)
         physicsWorld.contactDelegate = self
-    
         
-        //set paddle
-        paddle = SKSpriteNode (imageNamed: "paddle_100x100")
+        
+        //set paddle -new
+        paddle = paddleObj.getPaddle()
         paddle.position = (CGPointMake(CGRectGetMidX(self.frame), 600.0))
         self.addChild(paddle)
-        setPaddleProperties()
+        
+        
+//        paddle = SKSpriteNode (imageNamed: "paddle_100x100")
+//        self.addChild(paddle)
+//        setPaddleProperties()
         
         
         //set Walls
@@ -101,23 +106,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     
     func setPaddleProperties(){
-        //set physics body of paddle
-        paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddleHeight))
-        
-        //set physical size of paddle
-        paddle.size.width = paddleWidth
-        paddle.size.height = paddleHeight
-        
-        //category for paddle
-        paddle.physicsBody?.categoryBitMask = PhysicsCategory.paddle
-        //sprites that collisons will trigger event
-        paddle.physicsBody?.contactTestBitMask =  PhysicsCategory.powerUp | PhysicsCategory.obstacle
-        //sprites that will physically react to collision
-        paddle.physicsBody?.collisionBitMask = PhysicsCategory.walls
-        
-        paddle.physicsBody?.affectedByGravity = false
-        paddle.physicsBody?.dynamic = true
-        paddle.physicsBody?.allowsRotation = false
+//        //set physics body of paddle
+//        paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddleHeight))
+//        
+//        //set physical size of paddle
+//        paddle.size.width = paddleWidth
+//        paddle.size.height = paddleHeight
+//        
+//        //category for paddle
+//        paddle.physicsBody?.categoryBitMask = PhysicsCategory.paddle
+//        //sprites that collisons will trigger event
+//        paddle.physicsBody?.contactTestBitMask =  PhysicsCategory.powerUp | PhysicsCategory.obstacle
+//        //sprites that will physically react to collision
+//        paddle.physicsBody?.collisionBitMask = PhysicsCategory.walls
+//        
+//        paddle.physicsBody?.affectedByGravity = false
+//        paddle.physicsBody?.dynamic = true
+//        paddle.physicsBody?.allowsRotation = false
     }
     
     
@@ -205,33 +210,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func didBeginContact(contact: SKPhysicsContact) {
         
-        let paddle = (contact.bodyA.categoryBitMask == PhysicsCategory.paddle) ? contact.bodyA : contact.bodyB
+        let aPaddle = (contact.bodyA.categoryBitMask == PhysicsCategory.paddle) ? contact.bodyA : contact.bodyB
         
-        let other = (paddle == contact.bodyA) ? contact.bodyB : contact.bodyA
+        let other = (aPaddle == contact.bodyA) ? contact.bodyB : contact.bodyA
         
         //handle obstacle hitting paddle
         if other.categoryBitMask == PhysicsCategory.obstacle{
             other.node?.removeFromParent()
-            increasePaddleSize()
-           
+            paddleObj.increasePaddleSize()
+           // self.addChild(paddleObj.getPaddle())
+    
         }
         else if other.categoryBitMask == PhysicsCategory.powerUp{
             other.node?.removeFromParent()
-            decreasePaddleSize()
-            
+            paddleObj.decreasePaddleSize()
+           // self.addChild(paddleObj.getPaddle())
         }
         
+        let paddlePosition = paddle.position
+        paddle.removeFromParent()
+        paddle = paddleObj.getPaddle()
+        paddle.position = paddlePosition
+        self.addChild(paddle)
+    
     }
     
-    func increasePaddleSize(){
-        paddleWidth+=20
-        setPaddleProperties()
-        
-    }
-    func decreasePaddleSize(){
-        paddleWidth-=20
-        setPaddleProperties()
-    }
+//    func increasePaddleSize(){
+//        paddleWidth+=20
+//        setPaddleProperties()
+//        
+//    }
+//    func decreasePaddleSize(){
+//        paddleWidth-=20
+//        setPaddleProperties()
+//    }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
