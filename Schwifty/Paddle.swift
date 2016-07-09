@@ -9,52 +9,42 @@
 import Foundation
 import SpriteKit
 
-class Paddle  {
+class Paddle:SKSpriteNode  {
 
-    var paddle:SKSpriteNode!
-    var paddleWidth:CGFloat = 40
-    var paddleHeight: CGFloat = 40
+
     let bitMasks = PhysicsBitMasks()
 
+
     
-    init(){
-      configurePaddle()
-    }
-    
-    func increasePaddleSize(){
-        paddleWidth+=20
-    }
-    
-    func decreasePaddleSize(){
-        paddleWidth-=20
-    }
-    
-    func configurePaddle(){
-        paddle = SKSpriteNode(imageNamed: "paddle_100x100")
+    init(width: CGFloat, height: CGFloat){
+//      configurePaddle()
+        //declare texture for paddle
+        let texture = SKTexture(imageNamed: "paddle_100x100")
+        //set texture, color and size
+        super.init(texture: texture, color: SKColor.clear(), size: CGSize(width: width, height: height))
+        
+        
+        
         //set physics body of paddle
+        physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: width, height: height))
         
-        paddle.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: paddleWidth, height: paddleHeight))
         
-        //set physical size of paddle
-        paddle.size.width = paddleWidth
-        paddle.size.height = paddleHeight
         
         //category for paddle
-        paddle.physicsBody?.categoryBitMask = bitMasks.paddle
+        physicsBody?.categoryBitMask = bitMasks.paddle
         //sprites that collisons will trigger event
-        paddle.physicsBody?.contactTestBitMask =  bitMasks.powerUp | bitMasks.obstacle
+        physicsBody?.contactTestBitMask =  bitMasks.powerUp | bitMasks.obstacle
         //sprites that will physically react to collision
-        paddle.physicsBody?.collisionBitMask = bitMasks.walls
+        physicsBody?.collisionBitMask = bitMasks.walls
         
-        paddle.physicsBody?.affectedByGravity = false
-        paddle.physicsBody?.isDynamic = true
-        paddle.physicsBody?.allowsRotation = false
+        physicsBody?.affectedByGravity = false
+        physicsBody?.isDynamic = true
+        physicsBody?.allowsRotation = false
+        
     }
     
-    func getPaddle() -> SKSpriteNode {
-        configurePaddle()
-        return paddle
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-
 }

@@ -8,19 +8,25 @@
 
 import SpriteKit
 
-class PowerUp{
+class PowerUp:SKSpriteNode{
     
-    let powerUp = SKSpriteNode(imageNamed: "object1")
+//    let powerUp = SKSpriteNode(imageNamed: "object1")
     let bitMasks = PhysicsBitMasks()
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     init(){
-        powerUp.physicsBody = SKPhysicsBody(circleOfRadius: powerUp.size.width/2)
-        powerUp.physicsBody?.affectedByGravity = true
-        powerUp.physicsBody?.categoryBitMask = bitMasks.powerUp
+        let texture = SKTexture(imageNamed: "object1")
+        super.init(texture: texture, color: SKColor.clear(), size: texture.size())
+        
+        physicsBody = SKPhysicsBody(circleOfRadius: texture.size().width/2)
+        
+        physicsBody?.affectedByGravity = true
+        physicsBody?.categoryBitMask = bitMasks.powerUp
     }
 
 
-    func getPowerUp() -> SKSpriteNode{
-        return powerUp
-    }
+    
 }

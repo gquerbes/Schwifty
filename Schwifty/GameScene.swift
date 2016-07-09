@@ -20,10 +20,12 @@ import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     //declare paddle
-    var paddle:SKSpriteNode!
+//    var paddle:SKSpriteNode!
     //paddle class
-    let paddleObj = Paddle()
-
+    var paddleWidth:CGFloat = 40
+    var paddleHeight: CGFloat = 40
+    var paddle = SKSpriteNode()
+    
     
     //walls
     var leftWall: SKSpriteNode!
@@ -55,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         //set paddle
-        paddle = paddleObj.getPaddle()
+        paddle = Paddle(width: paddleWidth, height: paddleHeight)
         paddle.position = (CGPoint(x: self.frame.midX, y: 600.0))
         self.addChild(paddle)
         
@@ -80,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addObstacles),
-                SKAction.wait(forDuration: 0.4 )
+                SKAction.wait(forDuration: 0.8 )
                 ])
             ))
         
@@ -88,7 +90,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addPowerUp),
-                SKAction.wait(forDuration: 6.0 )
+                SKAction.wait(forDuration: 0.4 )
                 ])
             ))
 
@@ -103,8 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func addPowerUp(){
         //create powerUp from class
-        let powerUpObject = PowerUp()
-        let powerUp = powerUpObject.getPowerUp()
+        let powerUp = PowerUp()
         //set power up to random location
         powerUp.position = randomXInView()
         self.addChild(powerUp)
@@ -115,10 +116,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func addObstacles(){
         
-        //obstacle class
-        let obstacleObject = Obstacle()
+        
+        
         //create obstacle
-        let obstacle = obstacleObject.getObstacle()
+        let obstacle = Obstacle()
         obstacle.position = randomXInView()
         self.addChild(obstacle)
         
@@ -157,7 +158,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if other.categoryBitMask == bitMasks.obstacle{
             other.node?.removeFromParent()
             //end game if paddle passes certain width
-            if paddleObj.paddleWidth >= 380 {
+            if paddleWidth >= 380 {
                 //present main menu
                 let menu:GameScene = GameScene(fileNamed: "MainMenu")!
                 menu.scaleMode = .aspectFill
@@ -165,15 +166,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.view?.presentScene(menu,transition: transition)
             }
             else{
-                paddleObj.increasePaddleSize()
+                decreasePaddleSize()
                 replacePaddle()
             }
         }
         else if other.categoryBitMask == bitMasks.powerUp{
             other.node?.removeFromParent()
-            paddleObj.decreasePaddleSize()
+            increasePaddleSize()
             replacePaddle()
         }
+    }
+    
+    func increasePaddleSize(){
+        paddleWidth+=20
+    }
+    
+    func decreasePaddleSize(){
+        paddleWidth-=20
+    }
+    
+    /**
+     Reset paddle to starting size
+    */
+    func resetPaddle(){
+//        paddleObj.paddleWidth(
     }
     
     
@@ -183,7 +199,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let paddlePosition = paddle.position
         //remove paddle and add resized paddle to same position
         paddle.removeFromParent()
-        paddle = paddleObj.getPaddle()
+        paddle = Paddle(width: paddleWidth, height: paddleHeight)
         paddle.position = paddlePosition
         self.addChild(paddle)
     }

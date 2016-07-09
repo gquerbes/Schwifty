@@ -9,22 +9,25 @@
 import SpriteKit
 
 
-class Obstacle{
+class Obstacle:SKSpriteNode{
     
-    let obstacle = SKSpriteNode (imageNamed: "object3")
+//    let obstacle = SKSpriteNode (imageNamed: "object3")
     let bitMasks = PhysicsBitMasks()
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     init(){
+        let texture = SKTexture(imageNamed: "object3")
+        super.init(texture: texture, color: SKColor.clear(), size: texture.size())
+
+        physicsBody = SKPhysicsBody(circleOfRadius: texture.size().width/2)
+        
         //set obstacle
-        obstacle.physicsBody = SKPhysicsBody(circleOfRadius: obstacle.size.width/2)
-        obstacle.physicsBody?.affectedByGravity = true
-        obstacle.physicsBody?.categoryBitMask = bitMasks.obstacle
-        obstacle.physicsBody?.collisionBitMask = bitMasks.walls
+        physicsBody?.affectedByGravity = true
+        physicsBody?.categoryBitMask = bitMasks.obstacle
+        physicsBody?.collisionBitMask = bitMasks.walls
     }
-    
-    
-    func getObstacle() -> SKSpriteNode{
-        return obstacle
-    }
+  
     
 }
