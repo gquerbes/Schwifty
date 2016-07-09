@@ -33,7 +33,7 @@ class Paddle  {
         paddle = SKSpriteNode(imageNamed: "paddle_100x100")
         //set physics body of paddle
         
-        paddle.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: paddleWidth, height: paddleHeight))
+        paddle.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: paddleWidth, height: paddleHeight))
         
         //set physical size of paddle
         paddle.size.width = paddleWidth
@@ -47,7 +47,7 @@ class Paddle  {
         paddle.physicsBody?.collisionBitMask = bitMasks.walls
         
         paddle.physicsBody?.affectedByGravity = false
-        paddle.physicsBody?.dynamic = true
+        paddle.physicsBody?.isDynamic = true
         paddle.physicsBody?.allowsRotation = false
     }
     

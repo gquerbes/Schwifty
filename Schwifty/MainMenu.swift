@@ -11,10 +11,10 @@ import SpriteKit
 class MainMenu: SKScene {
 
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let game:GameScene = GameScene(fileNamed: "GameScene")!
-        game.scaleMode = .AspectFill
-        let transition:SKTransition = SKTransition.crossFadeWithDuration(1.0)
+        game.scaleMode = .aspectFill
+        let transition:SKTransition = SKTransition.crossFade(withDuration: 1.0)
         self.view?.presentScene(game, transition: transition)
     }
 }
