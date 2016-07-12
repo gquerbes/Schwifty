@@ -19,7 +19,7 @@ class Paddle:SKSpriteNode  {
     init(width: CGFloat, height: CGFloat){
 //      configurePaddle()
         //declare texture for paddle
-        let texture = SKTexture(imageNamed: "paddle_100x100")
+        let texture = SKTexture(imageNamed: "paddle_2_100x100")
         //set texture, color and size
         super.init(texture: texture, color: SKColor.clear(), size: CGSize(width: width, height: height))
         

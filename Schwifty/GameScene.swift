@@ -22,7 +22,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //declare paddle
 //    var paddle:SKSpriteNode!
     //paddle class
-    var paddleWidth:CGFloat = 40
+    var paddleWidth:CGFloat = 380
     var paddleHeight: CGFloat = 40
     var paddle = SKSpriteNode()
     
@@ -30,6 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //walls
     var leftWall: SKSpriteNode!
     var rightWall: SKSpriteNode!
+    var floor : SKSpriteNode!
     
     //location of touch 
     var touchLocation: CGPoint = CGPoint(x: 540, y: 0)
@@ -43,7 +44,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //physics variable
     let bitMasks = PhysicsBitMasks()
 
-    
+    //game variables
+    var downwardForce : Int = -2000
     
     /**
      Configure view
@@ -52,7 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         /* Setup your scene here */
         
         //physics
-        physicsWorld.gravity = CGVector(dx: 0, dy: -20)
+        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         
         
@@ -67,6 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //set Walls
         leftWall = self.childNode(withName: "leftWall") as! SKSpriteNode
         rightWall = self.childNode(withName: "rightWall") as! SKSpriteNode
+        floor = self.childNode(withName: "floor") as! SKSpriteNode
         
         setWallProperties()
         
@@ -75,22 +78,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //center location of screen
         currentScoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
         currentScoreLabel.fontSize = 65
+        currentScoreLabel.fontColor = SKColor.black()
         self.addChild(currentScoreLabel)
         
         
         // call and repeat action of presenting obstacles
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(addObstacles),
-                SKAction.wait(forDuration: 0.8 )
-                ])
-            ))
+//        run(SKAction.repeatForever(
+//            SKAction.sequence([
+//                SKAction.run(addObstacles),
+//                SKAction.wait(forDuration: 0.8 )
+//                ])
+//            ))
         
         // call and repeat action of presenting powerUps
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addPowerUp),
-                SKAction.wait(forDuration: 0.4 )
+                SKAction.wait(forDuration: 0.3 )
+                ])
+            ))
+
+        // call and repeat action of increasing the downward force
+        run(SKAction.repeatForever(
+            SKAction.sequence([
+                SKAction.run(increaseDownwardForce),
+                SKAction.wait(forDuration: 5.0 )
                 ])
             ))
 
@@ -109,6 +121,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //set power up to random location
         powerUp.position = randomXInView()
         self.addChild(powerUp)
+        powerUp.name = "powerUp"
+        
+        updateScore()
     }
     
     /**
@@ -116,19 +131,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func addObstacles(){
         
-        
-        
         //create obstacle
         let obstacle = Obstacle()
         obstacle.position = randomXInView()
         self.addChild(obstacle)
         
         
-        //update score
+    }
+    
+    func updateScore(){
         currentScore += 1
         currentScoreLabel.text = String(currentScore)
     }
-    
     /**
      - Returns:randomized X coordinate within frame at Y position 2000
     */
@@ -150,30 +164,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func didBegin(_ contact: SKPhysicsContact) {
         
-        let aPaddle = (contact.bodyA.categoryBitMask == bitMasks.paddle) ? contact.bodyA : contact.bodyB
+        let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
         
-        let other = (aPaddle == contact.bodyA) ? contact.bodyB : contact.bodyA
+        let other = (powerUp == contact.bodyA) ? contact.bodyB : contact.bodyA
         
-        //handle obstacle hitting paddle
-        if other.categoryBitMask == bitMasks.obstacle{
-            other.node?.removeFromParent()
-            //end game if paddle passes certain width
-            if paddleWidth >= 380 {
-                //present main menu
+        //perform action if paddle hits powerUp
+        if other.categoryBitMask == bitMasks.paddle{
+            print("paddle")
+            powerUp.node?.removeFromParent()
+        }
+            //perform action if paddle misses powerUp
+        else if other.categoryBitMask == bitMasks.floor{
+            print("floor")
+            powerUp.node?.removeFromParent()
+            decreasePaddleSize()
+            replacePaddle()
+            if paddle.size.width <= 0.0 {
+                    //present main menu
                 let menu:GameScene = GameScene(fileNamed: "MainMenu")!
                 menu.scaleMode = .aspectFill
                 let transition = SKTransition.flipHorizontal(withDuration: 1)
                 self.view?.presentScene(menu,transition: transition)
             }
-            else{
-                decreasePaddleSize()
-                replacePaddle()
-            }
-        }
-        else if other.categoryBitMask == bitMasks.powerUp{
-            other.node?.removeFromParent()
-            increasePaddleSize()
-            replacePaddle()
         }
     }
     
@@ -185,6 +197,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         paddleWidth-=20
     }
     
+    func increaseDownwardForce(){
+        downwardForce -= 200
+    }
     /**
      Reset paddle to starting size
     */
@@ -205,6 +220,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setWallProperties(){
+        //floor physics
+        floor.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 1080, height: 100))
+        floor.physicsBody?.categoryBitMask = bitMasks.floor
+        floor.physicsBody?.collisionBitMask = bitMasks.powerUp | bitMasks.obstacle
+        floor.physicsBody?.affectedByGravity = false
+        floor.physicsBody?.isDynamic = false
+        
         //wall physics body
         leftWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
         rightWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
@@ -247,7 +269,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let move = SKAction.moveTo(x: location, duration: 0.05)//adjust tracking speed
         paddle.run(move)
        
-        
+        self.enumerateChildNodes(withName: "powerUp", using: {
+            
+            (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
+            // do something with node or stop
+            node.physicsBody?.applyForce((CGVector(dx: 0, dy:self.downwardForce))
+            )
+            return
+        })
     
     }
 }
+

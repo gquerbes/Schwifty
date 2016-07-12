@@ -25,6 +25,7 @@ class PowerUp:SKSpriteNode{
         
         physicsBody?.affectedByGravity = true
         physicsBody?.categoryBitMask = bitMasks.powerUp
+        physicsBody?.contactTestBitMask = bitMasks.floor
     }
 
 
