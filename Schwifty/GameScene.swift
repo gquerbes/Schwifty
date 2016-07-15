@@ -45,13 +45,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let bitMasks = PhysicsBitMasks()
 
     //game variables
-    var downwardForce : Int = -2000
+    var downwardForce : Int = -1000
     
     /**
      Configure view
     */
     override func didMove(to view: SKView) {
         /* Setup your scene here */
+        //wallpaper
+        let background = SKSpriteNode(imageNamed: "Schwifty_Wallpaper.png")
+        background.position = CGPoint(x:self.size.width/2, y:self.size.height/2)
+        background.zPosition = 0
+        self.addChild(background)
         
         //physics
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
@@ -61,6 +66,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //set paddle
         paddle = Paddle(width: paddleWidth, height: paddleHeight)
         paddle.position = (CGPoint(x: self.frame.midX, y: 600.0))
+        paddle.zPosition = 1
         self.addChild(paddle)
         
     
@@ -79,6 +85,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         currentScoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
         currentScoreLabel.fontSize = 65
         currentScoreLabel.fontColor = SKColor.black()
+        currentScoreLabel.zPosition = 1
         self.addChild(currentScoreLabel)
         
         
@@ -102,7 +109,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(increaseDownwardForce),
-                SKAction.wait(forDuration: 5.0 )
+                SKAction.wait(forDuration: 10.0 )
                 ])
             ))
 
@@ -120,6 +127,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let powerUp = PowerUp()
         //set power up to random location
         powerUp.position = randomXInView()
+        powerUp.zPosition = 1
         self.addChild(powerUp)
         powerUp.name = "powerUp"
         
@@ -134,6 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //create obstacle
         let obstacle = Obstacle()
         obstacle.position = randomXInView()
+        obstacle.zPosition = 1
         self.addChild(obstacle)
         
         
@@ -163,6 +172,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
      Called when a contact is made
     */
     func didBegin(_ contact: SKPhysicsContact) {
+        
+        //what i need to do
+        //http://stackoverflow.com/questions/26702944/swift-spritekit-multiple-collision-detection
+        
         
         let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
         
@@ -198,7 +211,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func increaseDownwardForce(){
-        downwardForce -= 200
+        downwardForce -= 500
     }
     /**
      Reset paddle to starting size
@@ -216,6 +229,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         paddle.removeFromParent()
         paddle = Paddle(width: paddleWidth, height: paddleHeight)
         paddle.position = paddlePosition
+        paddle.zPosition = 1
         self.addChild(paddle)
     }
     

@@ -18,7 +18,7 @@ class PowerUp:SKSpriteNode{
     }
 
     init(){
-        let texture = SKTexture(imageNamed: "object1")
+        let texture = SKTexture(imageNamed: "object4")
         super.init(texture: texture, color: SKColor.clear(), size: texture.size())
         
         physicsBody = SKPhysicsBody(circleOfRadius: texture.size().width/2)

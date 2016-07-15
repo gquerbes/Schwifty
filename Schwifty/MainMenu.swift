@@ -17,4 +17,12 @@ class MainMenu: SKScene {
         let transition:SKTransition = SKTransition.crossFade(withDuration: 1.0)
         self.view?.presentScene(game, transition: transition)
     }
+    
+    override func didMove(to view: SKView) {
+        //configure wallpaper
+        let background = SKSpriteNode(imageNamed: "Schwifty_HomeScreen.png")
+        background.position = CGPoint(x:self.size.width/2, y:self.size.height/2)
+        background.zPosition = 0
+        self.addChild(background)
+    }
 }
