@@ -19,8 +19,6 @@ X    8. Place objects into seperate files
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    //declare paddle
-//    var paddle:SKSpriteNode!
     //paddle class
     var paddleWidth:CGFloat = 380
     var paddleHeight: CGFloat = 40
@@ -46,12 +44,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     //game variables
     var downwardForce : Int = -1000
+    var powerUpCounter : Int = 0
+    
+    //dropped items
+    var obstacle = Obstacle()
+    var powerUps = [PowerUp]()
+    
+    
     
     /**
      Configure view
     */
     override func didMove(to view: SKView) {
         /* Setup your scene here */
+        
+        //load powerUps
+        loadPowerUps()
+        
         //wallpaper
         let background = SKSpriteNode(imageNamed: "Schwifty_Wallpaper.png")
         background.position = CGPoint(x:self.size.width/2, y:self.size.height/2)
@@ -90,18 +99,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         // call and repeat action of presenting obstacles
-//        run(SKAction.repeatForever(
-//            SKAction.sequence([
-//                SKAction.run(addObstacles),
-//                SKAction.wait(forDuration: 0.8 )
-//                ])
-//            ))
+        run(SKAction.repeatForever(
+            SKAction.sequence([
+                SKAction.run(dropObstacle),
+                SKAction.wait(forDuration: 5.0 )
+                ])
+            ))
         
         // call and repeat action of presenting powerUps
         run(SKAction.repeatForever(
             SKAction.sequence([
-                SKAction.run(addPowerUp),
-                SKAction.wait(forDuration: 0.3 )
+                SKAction.run(dropPowerUp),
+                SKAction.wait(forDuration: 0.2 )
                 ])
             ))
 
@@ -112,41 +121,94 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 SKAction.wait(forDuration: 10.0 )
                 ])
             ))
-
+        
+        // call and repeat action of increasing the downward force
+        run(SKAction.repeatForever(
+            SKAction.sequence([
+                SKAction.run(addBonus),
+                SKAction.wait(forDuration: 10.0 )
+                ])
+            ))
     }
     
 
+    func loadPowerUps(){
+        for _ in 0...30{
+            let powerUp = PowerUp()
+            powerUp.zPosition = 1
+            powerUp.name = "powerUp"
+            powerUps.append(powerUp)
+        }
+    }
+//
+    func dropPowerUp(){
+        let powerUp = powerUps[powerUpCounter]
+        incrementPowerUpCounter()
+        powerUp.position = randomXInView()
+        self.addChild(powerUp)
+        
+    }
+    
+    func incrementPowerUpCounter(){
+        //print("powerUpCount \(powerUps.count)")
+        if powerUpCounter < powerUps.count - 1 {
+            powerUpCounter += 1
+        }
+        else{
+            powerUpCounter = 0
+        }
+    }
+    
+    func dropObstacle(){
+        obstacle.position = randomXInView()
+        obstacle.zPosition = 1
+        self.addChild(obstacle)
+        obstacle.name = "obstacle"
+    }
 
     
 
     /**
       adds powerUp object to scene
     */
-    func addPowerUp(){
+//    func addPowerUp(){
+//        //create powerUp from class
+//        let powerUp = PowerUp()
+//        //set power up to random location
+//        powerUp.position = randomXInView()
+//        powerUp.zPosition = 1
+//        self.addChild(powerUp)
+//        powerUp.name = "powerUp"
+//        
+//        updateScore()
+//    }
+    
+    /**
+     adds bonus object to scene
+     */
+    func addBonus(){
         //create powerUp from class
-        let powerUp = PowerUp()
+        let bonus = Bonus()
         //set power up to random location
-        powerUp.position = randomXInView()
-        powerUp.zPosition = 1
-        self.addChild(powerUp)
-        powerUp.name = "powerUp"
-        
-        updateScore()
+        bonus.position = randomXInView()
+        bonus.zPosition = 1
+        self.addChild(bonus)
+        bonus.name = "bonus"
     }
     
     /**
      Add obstacles to screen
+     REPLACED BY dropObstacle
     */
-    func addObstacles(){
-        
-        //create obstacle
-        let obstacle = Obstacle()
-        obstacle.position = randomXInView()
-        obstacle.zPosition = 1
-        self.addChild(obstacle)
-        
-        
-    }
+//    func addObstacles(){
+//        //create obstacle
+//        let obstacle = Obstacle()
+//        obstacle.position = randomXInView()
+//        obstacle.zPosition = 1
+//        obstacle.name = "obstacle"
+//        self.addChild(obstacle)
+//        
+//    }
     
     func updateScore(){
         currentScore += 1
@@ -173,41 +235,73 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     */
     func didBegin(_ contact: SKPhysicsContact) {
         
-        //what i need to do
-        //http://stackoverflow.com/questions/26702944/swift-spritekit-multiple-collision-detection
         
+        let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
-        let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
-        
-        let other = (powerUp == contact.bodyA) ? contact.bodyB : contact.bodyA
-        
-        //perform action if paddle hits powerUp
-        if other.categoryBitMask == bitMasks.paddle{
+        switch contactMask{
+        case PhysicsBitMasks().paddle | PhysicsBitMasks().powerUp:
+            let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
+            //let paddle = (powerUp == contact.bodyA) ? contact.bodyB : contact.bodyA
             print("paddle")
             powerUp.node?.removeFromParent()
-        }
-            //perform action if paddle misses powerUp
-        else if other.categoryBitMask == bitMasks.floor{
+            
+        case PhysicsBitMasks().powerUp | PhysicsBitMasks().floor:
+            let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
+            //let paddle = (powerUp == contact.bodyA) ? contact.bodyB : contact.bodyA
             print("floor")
             powerUp.node?.removeFromParent()
             decreasePaddleSize()
-            replacePaddle()
-            if paddle.size.width <= 0.0 {
-                    //present main menu
+            
+            if self.paddle.size.width <= 0.0 {
+                //present main menu
                 let menu:GameScene = GameScene(fileNamed: "MainMenu")!
                 menu.scaleMode = .aspectFill
                 let transition = SKTransition.flipHorizontal(withDuration: 1)
                 self.view?.presentScene(menu,transition: transition)
             }
+        
+        case PhysicsBitMasks().paddle | PhysicsBitMasks().bonus:
+            let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
+            print("got a bonus")
+            bonus.node?.removeFromParent()
+            increasePaddleSize()//clean this up dude
+            increasePaddleSize()
+            increasePaddleSize()
+            increasePaddleSize()
+            
+            
+        case PhysicsBitMasks().floor | PhysicsBitMasks().bonus:
+            let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
+            print("missed a bonus")
+            bonus.node?.removeFromParent()
+            
+        case PhysicsBitMasks().obstacle | PhysicsBitMasks().paddle:
+            let obstacle = (contact.bodyA.categoryBitMask == bitMasks.obstacle) ? contact.bodyA : contact.bodyB
+            print("caught an obstacle")
+            obstacle.node?.removeFromParent()
+            decreasePaddleSize()
+            decreasePaddleSize()
+            decreasePaddleSize()
+            decreasePaddleSize()
+            
+        case PhysicsBitMasks().obstacle | PhysicsBitMasks().floor:
+            let obstacle = (contact.bodyA.categoryBitMask == bitMasks.obstacle) ? contact.bodyA : contact.bodyB
+            print("Missed an obstacle")
+            obstacle.node?.removeFromParent()
+            
+            
+        default: fatalError("unrecognized collision")
         }
     }
     
     func increasePaddleSize(){
         paddleWidth+=20
+        replacePaddle()
     }
     
     func decreasePaddleSize(){
         paddleWidth-=20
+        replacePaddle()
     }
     
     func increaseDownwardForce(){
@@ -237,7 +331,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //floor physics
         floor.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 1080, height: 100))
         floor.physicsBody?.categoryBitMask = bitMasks.floor
-        floor.physicsBody?.collisionBitMask = bitMasks.powerUp | bitMasks.obstacle
+        floor.physicsBody?.contactTestBitMask = bitMasks.powerUp | bitMasks.obstacle | bitMasks.bonus
         floor.physicsBody?.affectedByGravity = false
         floor.physicsBody?.isDynamic = false
         
@@ -292,6 +386,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         })
     
+        self.enumerateChildNodes(withName: "bonus", using: {
+            
+            (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
+            // do something with node or stop
+            node.physicsBody?.applyForce((CGVector(dx: 0, dy:self.downwardForce))
+            )
+            return
+        })
+        
+        self.enumerateChildNodes(withName: "obstacle", using: {
+            
+            (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
+            // do something with node or stop
+            node.physicsBody?.applyForce((CGVector(dx: 0, dy:self.downwardForce))
+            )
+            return
+        })
     }
 }
 

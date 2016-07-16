@@ -17,6 +17,7 @@ struct PhysicsBitMasks {
     let paddle : UInt32 = 0x1     // 1
     let obstacle : UInt32 = 0x1 << 1      // 2
     let powerUp : UInt32 = 0x1 << 2    // 4
-    let walls : UInt32 = 0x1 << 3
-    let floor : UInt32 = 0x1 << 4
+    let walls : UInt32 = 0x1 << 3   //8
+    let floor : UInt32 = 0x1 << 4   //16
+    let bonus : UInt32 = 0x1 << 5   //32
 }

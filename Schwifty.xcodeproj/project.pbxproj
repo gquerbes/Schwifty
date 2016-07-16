@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		74751BCF1D36F12100B79628 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74751BCE1D36F12100B79628 /* Assets.xcassets */; };
+		748DDB281D395D3C00D0C853 /* Bonus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748DDB271D395D3C00D0C853 /* Bonus.swift */; };
 		749B4B581D2AE5C20063CAED /* Paddle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B571D2AE5C20063CAED /* Paddle.swift */; };
 		749B4B5A1D2C1C5E0063CAED /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = 749B4B591D2C1C5E0063CAED /* MainMenu.sks */; };
 		749B4B5C1D2C1C820063CAED /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B5B1D2C1C820063CAED /* MainMenu.swift */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		74751BCE1D36F12100B79628 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		748DDB271D395D3C00D0C853 /* Bonus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bonus.swift; sourceTree = "<group>"; };
 		749B4B571D2AE5C20063CAED /* Paddle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Paddle.swift; sourceTree = "<group>"; };
 		749B4B591D2C1C5E0063CAED /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		749B4B5B1D2C1C820063CAED /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				749B4B671D2C310A0063CAED /* PowerUp.swift */,
+				748DDB271D395D3C00D0C853 /* Bonus.swift */,
 				749B4B5D1D2C27C40063CAED /* Obstacle.swift */,
 				749B4B571D2AE5C20063CAED /* Paddle.swift */,
 				749B4B5F1D2C292B0063CAED /* PhysicsBitMasks.swift */,
@@ -177,6 +180,7 @@
 				749B4B681D2C310A0063CAED /* PowerUp.swift in Sources */,
 				749B4B601D2C292B0063CAED /* PhysicsBitMasks.swift in Sources */,
 				749B4B5E1D2C27C40063CAED /* Obstacle.swift in Sources */,
+				748DDB281D395D3C00D0C853 /* Bonus.swift in Sources */,
 				749B4B581D2AE5C20063CAED /* Paddle.swift in Sources */,
 				74A6AD421D2300C300B2BFD6 /* GameViewController.swift in Sources */,
 				74A6AD3C1D2300C300B2BFD6 /* AppDelegate.swift in Sources */,
@@ -299,6 +303,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.fourteen66.Schwifty;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -314,6 +319,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

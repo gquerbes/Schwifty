@@ -33,7 +33,7 @@ class Paddle:SKSpriteNode  {
         //category for paddle
         physicsBody?.categoryBitMask = bitMasks.paddle
         //sprites that collisons will trigger event
-        physicsBody?.contactTestBitMask =  bitMasks.powerUp | bitMasks.obstacle
+        physicsBody?.contactTestBitMask =  bitMasks.powerUp | bitMasks.obstacle | bitMasks.bonus
         //sprites that will physically react to collision
         physicsBody?.collisionBitMask = bitMasks.walls
         
