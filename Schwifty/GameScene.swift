@@ -36,10 +36,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // labels
     var currentScoreLabel: SKLabelNode!
+    var highScoreLabel: SKLabelNode!
     
     //score
     var currentScore = 0
+    var highScore = 0
  
+    //user defaults
+    let userDefaults = UserDefaults.standard
+    
     
     //physics variable
     let bitMasks = PhysicsBitMasks()
@@ -61,6 +66,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //load powerUps
         loadPowerUps()
+        
+        ///Check if high score is on local storage and set it on game
+        if let highScoreOnFile = userDefaults.value(forKey: "highScore") {
+            /// do something here when a high score exists
+            highScore = highScoreOnFile as! Int
+            print("highScore on file is: \(highScore)")
+        }
         
         //wallpaper
         let background = SKSpriteNode(imageNamed: "Schwifty_Wallpaper.png")
@@ -291,6 +303,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
  
     func endGame(){
+        if currentScore > highScore{
+            highScore = currentScore
+            //write high score to local storage
+            userDefaults.setValue(highScore, forKey: "highScore")
+            userDefaults.synchronize()
+        }
+        
         //present main menu
         let menu:GameScene = GameScene(fileNamed: "MainMenu")!
         menu.scaleMode = .aspectFill
