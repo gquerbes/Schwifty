@@ -14,13 +14,14 @@ X    5. Start Screen
 X    6. End of game logic
     7. Improved scoring system
 X    8. Place objects into seperate files
+    9. Hide sprite objects instead of pulling from array
  */
 
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     //paddle class
-    var paddleWidth:CGFloat = 380
+    var paddleWidth:CGFloat = 50
     var paddleHeight: CGFloat = 40
     var paddle = SKSpriteNode()
     
@@ -38,6 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //score
     var currentScore = 0
+ 
     
     //physics variable
     let bitMasks = PhysicsBitMasks()
@@ -56,7 +58,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
      Configure view
     */
     override func didMove(to view: SKView) {
-        /* Setup your scene here */
         
         //load powerUps
         loadPowerUps()
@@ -110,7 +111,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(dropPowerUp),
-                SKAction.wait(forDuration: 0.2 )
+                SKAction.wait(forDuration: 0.4 )
                 ])
             ))
 
@@ -133,7 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
 
     func loadPowerUps(){
-        for _ in 0...30{
+        for _ in 0..<15{
             let powerUp = PowerUp()
             powerUp.zPosition = 1
             powerUp.name = "powerUp"
@@ -142,11 +143,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 //
     func dropPowerUp(){
-        let powerUp = powerUps[powerUpCounter]
         incrementPowerUpCounter()
+        let powerUp = powerUps[powerUpCounter]
         powerUp.position = randomXInView()
-        self.addChild(powerUp)
-        
+        if powerUp.parent != nil {
+            powerUp.removeFromParent()
+        }
+            self.addChild(powerUp)
     }
     
     func incrementPowerUpCounter(){
@@ -210,8 +213,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        
 //    }
     
-    func updateScore(){
-        currentScore += 1
+    func updateScore(increment: Int){
+        currentScore += increment
         currentScoreLabel.text = String(currentScore)
     }
     /**
@@ -223,70 +226,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return CGPoint(x: randomX, y: 2000)
         
     }
-    /**
-     converts CG point to make game work across all screen dimensions
-    */
-    func convert(_ point: CGPoint)->CGPoint {
-        return self.view!.convert(CGPoint(x: point.x, y:self.view!.frame.height-point.y), to:self)
-    }
+  
     
     /**
      Called when a contact is made
     */
     func didBegin(_ contact: SKPhysicsContact) {
-        
-        
+        //get contact mask of 2 colliding bodies
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         switch contactMask{
         case PhysicsBitMasks().paddle | PhysicsBitMasks().powerUp:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
-            //let paddle = (powerUp == contact.bodyA) ? contact.bodyB : contact.bodyA
-            print("paddle")
+            updateScore(increment: 1)
+            updatePaddleSize(amount: 2)
             powerUp.node?.removeFromParent()
             
         case PhysicsBitMasks().powerUp | PhysicsBitMasks().floor:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
-            //let paddle = (powerUp == contact.bodyA) ? contact.bodyB : contact.bodyA
-            print("floor")
             powerUp.node?.removeFromParent()
-            decreasePaddleSize()
+            updatePaddleSize(amount: -20)
             
-            if self.paddle.size.width <= 0.0 {
-                //present main menu
-                let menu:GameScene = GameScene(fileNamed: "MainMenu")!
-                menu.scaleMode = .aspectFill
-                let transition = SKTransition.flipHorizontal(withDuration: 1)
-                self.view?.presentScene(menu,transition: transition)
-            }
+//            if self.paddle.size.width <= 0.0 {
+//                endGame()
+//            }
         
         case PhysicsBitMasks().paddle | PhysicsBitMasks().bonus:
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
-            print("got a bonus")
+            updateScore(increment: 5)
+            updatePaddleSize(amount: 80)
             bonus.node?.removeFromParent()
-            increasePaddleSize()//clean this up dude
-            increasePaddleSize()
-            increasePaddleSize()
-            increasePaddleSize()
             
             
         case PhysicsBitMasks().floor | PhysicsBitMasks().bonus:
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
-            print("missed a bonus")
             bonus.node?.removeFromParent()
+            
             
         case PhysicsBitMasks().obstacle | PhysicsBitMasks().paddle:
             let obstacle = (contact.bodyA.categoryBitMask == bitMasks.obstacle) ? contact.bodyA : contact.bodyB
-            print("caught an obstacle")
             obstacle.node?.removeFromParent()
-            decreasePaddleSize()
-            decreasePaddleSize()
-            decreasePaddleSize()
-            decreasePaddleSize()
+            updateScore(increment: -10)
+            updatePaddleSize(amount: -80)
+            
             
         case PhysicsBitMasks().obstacle | PhysicsBitMasks().floor:
             let obstacle = (contact.bodyA.categoryBitMask == bitMasks.obstacle) ? contact.bodyA : contact.bodyB
-            print("Missed an obstacle")
             obstacle.node?.removeFromParent()
             
             
@@ -294,14 +279,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func increasePaddleSize(){
-        paddleWidth+=20
-        replacePaddle()
+    func updatePaddleSize(amount: Int){
+        paddleWidth += CGFloat(amount)
+        if paddleWidth <= 0{
+            endGame()
+        }
+        else{
+            replacePaddle()
+        }
+        
     }
-    
-    func decreasePaddleSize(){
-        paddleWidth-=20
-        replacePaddle()
+ 
+    func endGame(){
+        //present main menu
+        let menu:GameScene = GameScene(fileNamed: "MainMenu")!
+        menu.scaleMode = .aspectFill
+        let transition = SKTransition.flipHorizontal(withDuration: 1)
+        self.view?.presentScene(menu,transition: transition)
     }
     
     func increaseDownwardForce(){
@@ -405,4 +399,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         })
     }
 }
+
 
