@@ -18,6 +18,7 @@ X    8. Place objects into seperate files
  */
 
 import SpriteKit
+import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     //paddle class
@@ -50,7 +51,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let bitMasks = PhysicsBitMasks()
 
     //game variables
-    var downwardForce : Int = -1000
+    var downwardForce : Int = -700
     var powerUpCounter : Int = 0
     
     //dropped items
@@ -88,7 +89,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //set paddle
         paddle = Paddle(width: paddleWidth, height: paddleHeight)
         paddle.position = (CGPoint(x: self.frame.midX, y: 600.0))
-        paddle.zPosition = 1
+        paddle.zPosition = 2
         self.addChild(paddle)
         
     
@@ -115,7 +116,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(dropObstacle),
-                SKAction.wait(forDuration: 5.0 )
+                SKAction.wait(forDuration: 4.3 )
                 ])
             ))
         
@@ -131,7 +132,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(increaseDownwardForce),
-                SKAction.wait(forDuration: 10.0 )
+                SKAction.wait(forDuration: 9.0 )
                 ])
             ))
         
@@ -139,7 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addBonus),
-                SKAction.wait(forDuration: 10.0 )
+                SKAction.wait(forDuration: 6.1 )
                 ])
             ))
     }
@@ -211,19 +212,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bonus.name = "bonus"
     }
     
-    /**
-     Add obstacles to screen
-     REPLACED BY dropObstacle
-    */
-//    func addObstacles(){
-//        //create obstacle
-//        let obstacle = Obstacle()
-//        obstacle.position = randomXInView()
-//        obstacle.zPosition = 1
-//        obstacle.name = "obstacle"
-//        self.addChild(obstacle)
-//        
-//    }
+
     
     func updateScore(increment: Int){
         currentScore += increment
@@ -232,11 +221,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /**
      - Returns:randomized X coordinate within frame at Y position 2000
     */
+//    func randomXInView() -> CGPoint{
+//        let sizeX = Int(self.frame.maxX + 15)
+//        let randomX = CGFloat(Int(arc4random()) % sizeX)
+//        return CGPoint(x: randomX, y: 2000)
+//        
+//    }
+    
+    /**
+     - Returns:randomized X coordinate within frame at Y position 2000
+     */
     func randomXInView() -> CGPoint{
-        let sizeX = Int(self.frame.maxX + 15)
-        let randomX = CGFloat(Int(arc4random()) % sizeX)
-        return CGPoint(x: randomX, y: 2000)
-        
+        let randomXPosition = GKShuffledDistribution(lowestValue: Int(self.frame.minX), highestValue: Int(self.frame.maxX))
+        return CGPoint(x:randomXPosition.nextInt(), y: 2000)
+    
     }
   
     
@@ -248,7 +246,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         switch contactMask{
-        case PhysicsBitMasks().paddle | PhysicsBitMasks().powerUp:
+        case PhysicsBitMasks().powerUp | PhysicsBitMasks().paddle:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
             updateScore(increment: 1)
             updatePaddleSize(amount: 2)
@@ -263,14 +261,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //                endGame()
 //            }
         
-        case PhysicsBitMasks().paddle | PhysicsBitMasks().bonus:
+        case PhysicsBitMasks().bonus | PhysicsBitMasks().paddle:
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
             updateScore(increment: 5)
             updatePaddleSize(amount: 80)
             bonus.node?.removeFromParent()
             
             
-        case PhysicsBitMasks().floor | PhysicsBitMasks().bonus:
+        case PhysicsBitMasks().bonus | PhysicsBitMasks().floor:
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
             bonus.node?.removeFromParent()
             
