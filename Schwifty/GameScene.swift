@@ -22,9 +22,9 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     //paddle class
-    var paddleWidth:CGFloat = 50
+    var paddleWidth:CGFloat = 100
     var paddleHeight: CGFloat = 40
-    var paddle = Paddle(width: 50, height: 40)
+    var paddle = Paddle(width: 100, height: 40)
 
     
     
@@ -247,6 +247,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         //get contact mask of 2 colliding bodies
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
+        //paddle edges
+        
         
         switch contactMask{
         case PhysicsBitMasks().powerUp | PhysicsBitMasks().paddle:
@@ -256,21 +258,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             powerUp.node?.removeFromParent()
             
             //position the sparkParticle at location of collision relative to paddle
-            self.paddle.sparkParticle.position = convert(contact.contactPoint, to: paddle)
+            let contactPosition = convert(contact.contactPoint, to: paddle)
             
             //play spark particle
-            self.paddle.playSpark()
+            self.paddle.playSpark(type: "PowerUp", position1: contactPosition, position2: nil)
             
         case PhysicsBitMasks().powerUp | PhysicsBitMasks().floor:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
             powerUp.node?.removeFromParent()
             updatePaddleSize(amount: -20)
             
+            let rightEdge = self.paddle.size.width/2
+            let leftEdge = rightEdge - self.paddle.size.width
+            //play spark particle
+            self.paddle.playSpark(type: "Obstacle", position1: CGPoint(x: leftEdge, y: 0.0),position2:  CGPoint(x: rightEdge, y: 0.0))
+            
         
         case PhysicsBitMasks().bonus | PhysicsBitMasks().paddle:
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
             updateScore(increment: 5)
-            updatePaddleSize(amount: 80)
+            updatePaddleSize(amount: 100)
             bonus.node?.removeFromParent()
             
             
@@ -284,6 +291,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             obstacle.node?.removeFromParent()
             updateScore(increment: -10)
             updatePaddleSize(amount: -80)
+           
+            let rightEdge = self.paddle.size.width/2
+            let leftEdge = rightEdge - self.paddle.size.width
+            
+            //play spark particle
+            self.paddle.playSpark(type: "Obstacle", position1: CGPoint(x: leftEdge, y: 0.0),position2:  CGPoint(x: rightEdge, y: 0.0))
+            
             
             
         case PhysicsBitMasks().obstacle | PhysicsBitMasks().floor:

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		74751BCF1D36F12100B79628 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74751BCE1D36F12100B79628 /* Assets.xcassets */; };
+		747683361D43F59100C70C79 /* ObstacleContactSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 747683351D43F59100C70C79 /* ObstacleContactSpark.sks */; };
 		748BF3741D42E8C6000527F2 /* PowerUpContactSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 748BF3721D42E8C6000527F2 /* PowerUpContactSpark.sks */; };
 		748BF3751D42E8C6000527F2 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 748BF3731D42E8C6000527F2 /* spark.png */; };
 		748DDB281D395D3C00D0C853 /* Bonus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748DDB271D395D3C00D0C853 /* Bonus.swift */; };
@@ -27,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		74751BCE1D36F12100B79628 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		747683351D43F59100C70C79 /* ObstacleContactSpark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ObstacleContactSpark.sks; sourceTree = "<group>"; };
 		748BF3721D42E8C6000527F2 /* PowerUpContactSpark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = PowerUpContactSpark.sks; sourceTree = "<group>"; };
 		748BF3731D42E8C6000527F2 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		748DDB271D395D3C00D0C853 /* Bonus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bonus.swift; sourceTree = "<group>"; };
@@ -57,6 +59,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		747683341D43F3D500C70C79 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				74A6AD3D1D2300C300B2BFD6 /* GameScene.sks */,
+				74A6AD3F1D2300C300B2BFD6 /* GameScene.swift */,
+				749B4B591D2C1C5E0063CAED /* MainMenu.sks */,
+				749B4B5B1D2C1C820063CAED /* MainMenu.swift */,
+			);
+			name = Scenes;
+			sourceTree = "<group>";
+		};
+		747683371D43F59B00C70C79 /* Particles */ = {
+			isa = PBXGroup;
+			children = (
+				748BF3721D42E8C6000527F2 /* PowerUpContactSpark.sks */,
+				747683351D43F59100C70C79 /* ObstacleContactSpark.sks */,
+				748BF3731D42E8C6000527F2 /* spark.png */,
+			);
+			name = Particles;
+			sourceTree = "<group>";
+		};
 		749B4B691D2C31400063CAED /* Objects */ = {
 			isa = PBXGroup;
 			children = (
@@ -65,8 +88,7 @@
 				749B4B5D1D2C27C40063CAED /* Obstacle.swift */,
 				749B4B571D2AE5C20063CAED /* Paddle.swift */,
 				749B4B5F1D2C292B0063CAED /* PhysicsBitMasks.swift */,
-				748BF3721D42E8C6000527F2 /* PowerUpContactSpark.sks */,
-				748BF3731D42E8C6000527F2 /* spark.png */,
+				747683371D43F59B00C70C79 /* Particles */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -90,13 +112,10 @@
 		74A6AD3A1D2300C300B2BFD6 /* Schwifty */ = {
 			isa = PBXGroup;
 			children = (
-				749B4B691D2C31400063CAED /* Objects */,
-				74A6AD3B1D2300C300B2BFD6 /* AppDelegate.swift */,
-				74A6AD3D1D2300C300B2BFD6 /* GameScene.sks */,
-				74A6AD3F1D2300C300B2BFD6 /* GameScene.swift */,
-				749B4B591D2C1C5E0063CAED /* MainMenu.sks */,
-				749B4B5B1D2C1C820063CAED /* MainMenu.swift */,
 				74A6AD411D2300C300B2BFD6 /* GameViewController.swift */,
+				74A6AD3B1D2300C300B2BFD6 /* AppDelegate.swift */,
+				747683341D43F3D500C70C79 /* Scenes */,
+				749B4B691D2C31400063CAED /* Objects */,
 				74751BCE1D36F12100B79628 /* Assets.xcassets */,
 				74A6AD431D2300C300B2BFD6 /* Main.storyboard */,
 				74A6AD481D2300C300B2BFD6 /* LaunchScreen.storyboard */,
@@ -167,6 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74A6AD3E1D2300C300B2BFD6 /* GameScene.sks in Resources */,
+				747683361D43F59100C70C79 /* ObstacleContactSpark.sks in Resources */,
 				74A6AD4A1D2300C300B2BFD6 /* LaunchScreen.storyboard in Resources */,
 				749B4B5A1D2C1C5E0063CAED /* MainMenu.sks in Resources */,
 				748BF3751D42E8C6000527F2 /* spark.png in Resources */,

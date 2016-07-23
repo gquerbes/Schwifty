@@ -11,9 +11,10 @@ import SpriteKit
 
 class Paddle : SKSpriteNode  {
     
-    let sparkParticle : SKEmitterNode
-    ///particle location
-    let powerUpContactSparkPath = Bundle.main.pathForResource("PowerUpContactSpark", ofType: "sks")
+    let powerUpContactSparkParticle : SKEmitterNode
+    let obstacleContactLeftSparkParticle : SKEmitterNode
+    let obstacleContactRightSparkParticle : SKEmitterNode
+    
     
     let bitMasks = PhysicsBitMasks()
     
@@ -22,9 +23,17 @@ class Paddle : SKSpriteNode  {
         //declare texture for paddle
         let texture = SKTexture(imageNamed: "paddle_2_100x100")
         
-        //particle instantiation
-        sparkParticle = NSKeyedUnarchiver.unarchiveObject(withFile: powerUpContactSparkPath!) as! SKEmitterNode
+        ///particle location
+        let powerUpContactSparkPath = Bundle.main.pathForResource("PowerUpContactSpark", ofType: "sks")
+        let obstacleContactSparkPath = Bundle.main.pathForResource("ObstacleContactSpark", ofType: "sks")
+
         
+        //particle instantiation
+        powerUpContactSparkParticle = NSKeyedUnarchiver.unarchiveObject(withFile: powerUpContactSparkPath!) as! SKEmitterNode
+        
+        obstacleContactLeftSparkParticle = NSKeyedUnarchiver.unarchiveObject(withFile: obstacleContactSparkPath!) as! SKEmitterNode
+        
+        obstacleContactRightSparkParticle = NSKeyedUnarchiver.unarchiveObject(withFile: obstacleContactSparkPath!) as! SKEmitterNode
        
         
         //set texture, color and size
@@ -48,9 +57,14 @@ class Paddle : SKSpriteNode  {
         physicsBody?.allowsRotation = false
         
 
-        sparkParticle.isHidden = true
-        self.addChild(sparkParticle)
+        powerUpContactSparkParticle.isHidden = true
+        self.addChild(powerUpContactSparkParticle)
       
+        obstacleContactLeftSparkParticle.isHidden = true
+        self.addChild(obstacleContactLeftSparkParticle)
+        
+        obstacleContactRightSparkParticle.isHidden = true
+        self.addChild(obstacleContactRightSparkParticle)
         
     }
     
@@ -58,9 +72,29 @@ class Paddle : SKSpriteNode  {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func playSpark(){
-        sparkParticle.isHidden = false
-        sparkParticle.resetSimulation()
+    
+    func playSpark(type: String, position1: CGPoint, position2: CGPoint?){
+        var particles = [SKEmitterNode]()
+        
+        switch type{
+        case "PowerUp" :
+            particles.append(powerUpContactSparkParticle)
+            particles[0].position = position1
+        case "Obstacle" :
+            particles.append(obstacleContactLeftSparkParticle)
+            particles.append(obstacleContactRightSparkParticle)
+            particles[0].position = position1
+            particles[1].position = position2!
+        default:
+            fatalError("invalid particle type")
+        }
+        
+        for particle in particles {
+            if particle.isHidden {
+                particle.isHidden = false
+            }
+            particle.resetSimulation()
+        }
     }
     
 }
