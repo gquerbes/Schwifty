@@ -6,15 +6,15 @@
 //  Copyright (c) 2016 Fourteen66. All rights reserved.
 //
 /* MARK: TODO
-    1. Add variable speed with stages
-    2. Add new powerUp to return to original size?
-    3. Moving wallpaper
-    4. Track high score
-X    5. Start Screen 
-X    6. End of game logic
-    7. Improved scoring system
-X    8. Place objects into seperate files
-    9. Hide sprite objects instead of pulling from array
+    * Add variable speed with stages
+    * Add new powerUp to return to original size?
+X    * Track high score
+X    * Start Screen
+X    * End of game logic
+    * Improved scoring system
+X    * Place objects into seperate files
+    * Create particle affects for each object type
+ 
  */
 
 import SpriteKit
@@ -24,7 +24,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //paddle class
     var paddleWidth:CGFloat = 50
     var paddleHeight: CGFloat = 40
-    var paddle = SKSpriteNode()
+    var paddle = Paddle(width: 50, height: 40)
+
     
     
     //walls
@@ -87,10 +88,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         //set paddle
-        paddle = Paddle(width: paddleWidth, height: paddleHeight)
         paddle.position = (CGPoint(x: self.frame.midX, y: 600.0))
-        paddle.zPosition = 2
+        paddle.zPosition = 1
         self.addChild(paddle)
+    
         
     
         
@@ -111,6 +112,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         currentScoreLabel.zPosition = 1
         self.addChild(currentScoreLabel)
         
+
         
         // call and repeat action of presenting obstacles
         run(SKAction.repeatForever(
@@ -147,14 +149,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
 
     func loadPowerUps(){
-        for _ in 0..<15{
+        for _ in 0..<10{
             let powerUp = PowerUp()
             powerUp.zPosition = 1
             powerUp.name = "powerUp"
             powerUps.append(powerUp)
         }
     }
-//
+
+    
     func dropPowerUp(){
         incrementPowerUpCounter()
         let powerUp = powerUps[powerUpCounter]
@@ -164,7 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
             self.addChild(powerUp)
     }
-    
+
     func incrementPowerUpCounter(){
         //print("powerUpCount \(powerUps.count)")
         if powerUpCounter < powerUps.count - 1 {
@@ -252,14 +255,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             updatePaddleSize(amount: 2)
             powerUp.node?.removeFromParent()
             
+            //position the sparkParticle at location of collision relative to paddle
+            self.paddle.sparkParticle.position = convert(contact.contactPoint, to: paddle)
+            
+            //play spark particle
+            self.paddle.playSpark()
+            
         case PhysicsBitMasks().powerUp | PhysicsBitMasks().floor:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
             powerUp.node?.removeFromParent()
             updatePaddleSize(amount: -20)
             
-//            if self.paddle.size.width <= 0.0 {
-//                endGame()
-//            }
         
         case PhysicsBitMasks().bonus | PhysicsBitMasks().paddle:
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
@@ -295,7 +301,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             endGame()
         }
         else{
-            replacePaddle()
+            //copy current position of paddle
+            let paddlePosition = paddle.position
+            //remove paddle and add resized paddle to same position
+            paddle.removeFromParent()
+            paddle = Paddle(width: paddleWidth, height: paddleHeight)
+            paddle.position = paddlePosition
+            paddle.zPosition = 1
+            self.addChild(paddle)
         }
         
     }
@@ -315,28 +328,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view?.presentScene(menu,transition: transition)
     }
     
+    
     func increaseDownwardForce(){
         downwardForce -= 500
     }
-    /**
-     Reset paddle to starting size
-    */
-    func resetPaddle(){
-//        paddleObj.paddleWidth(
-    }
+
     
     
-    //replace paddle with resized version
-    func replacePaddle(){
-        //copy current position of paddle
-        let paddlePosition = paddle.position
-        //remove paddle and add resized paddle to same position
-        paddle.removeFromParent()
-        paddle = Paddle(width: paddleWidth, height: paddleHeight)
-        paddle.position = paddlePosition
-        paddle.zPosition = 1
-        self.addChild(paddle)
-    }
+ 
     
     func setWallProperties(){
         //floor physics
@@ -346,31 +345,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         floor.physicsBody?.affectedByGravity = false
         floor.physicsBody?.isDynamic = false
         
-        //wall physics body
+        //left wall physics
         leftWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
-        rightWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
-        
-        //category bit masks
         leftWall.physicsBody?.categoryBitMask = bitMasks.walls
-        rightWall.physicsBody?.categoryBitMask = bitMasks.walls
-        
-        //collision bit masks
         leftWall.physicsBody?.collisionBitMask = bitMasks.paddle
-        rightWall.physicsBody?.collisionBitMask = bitMasks.paddle
-        
-        //gravity properties
         leftWall.physicsBody?.affectedByGravity = false
-        rightWall.physicsBody?.affectedByGravity = false
-        
-        //affected by physics
         leftWall.physicsBody?.isDynamic = false
+
+        //right wall physics
+        rightWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
+        rightWall.physicsBody?.categoryBitMask = bitMasks.walls
+        rightWall.physicsBody?.collisionBitMask = bitMasks.paddle
+        rightWall.physicsBody?.affectedByGravity = false
         rightWall.physicsBody?.isDynamic = false
     
     }
     
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-       /* Called when a touch begins */
         touchLocation = touches.first!.location(in: self)
     }
    

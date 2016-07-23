@@ -31,9 +31,9 @@ class MainMenu: SKScene {
         if let highScore = userDefaults.value(forKey: "highScore"){
             let highScoreLabel = SKLabelNode(text: "High Score: \(highScore)")
             highScoreLabel.zPosition = 1
-            highScoreLabel.fontSize = 65
-            highScoreLabel.fontColor = SKColor.black()
-            highScoreLabel.fontName = "Helvetica"
+            highScoreLabel.fontSize = 50
+            highScoreLabel.fontColor = SKColor.darkGray()
+            highScoreLabel.fontName = "Trebuchet MS Bold"
             highScoreLabel.position = CGPoint(x:self.size.width/2, y:self.size.height/1.25)
             self.addChild(highScoreLabel)
         }
