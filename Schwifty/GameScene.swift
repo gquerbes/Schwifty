@@ -123,7 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(dropObstacle),
-                SKAction.wait(forDuration: 4.3 )
+                SKAction.wait(forDuration: 2.5 )
                 ])
             ))
         
@@ -259,14 +259,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case PhysicsBitMasks().powerUp | PhysicsBitMasks().paddle:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
             updateScore(increment: 1)
-            updatePaddleSize(amount: 2)
+//            updatePaddleSize(amount: 2)
             powerUp.node?.removeFromParent()
             
             //position the sparkParticle at location of collision relative to paddle
             let contactPosition = convert(contact.contactPoint, to: paddle)
-            
             //play spark particle
             self.paddle.playSpark(type: "PowerUp", position1: contactPosition, position2: nil)
+            
             
         case PhysicsBitMasks().powerUp | PhysicsBitMasks().floor:
             let powerUp = (contact.bodyA.categoryBitMask == bitMasks.powerUp) ? contact.bodyA : contact.bodyB
@@ -294,19 +294,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case PhysicsBitMasks().obstacle | PhysicsBitMasks().paddle:
             let obstacle = (contact.bodyA.categoryBitMask == bitMasks.obstacle) ? contact.bodyA : contact.bodyB
             obstacle.node?.removeFromParent()
-            updateScore(increment: -10)
+//            updateScore(increment: -10)
             updatePaddleSize(amount: -80)
            
             let rightEdge = self.paddle.size.width/2
             let leftEdge = rightEdge - self.paddle.size.width
             
-            
-            
             //play spark particle
             self.paddle.playSpark(type: "Obstacle", position1: CGPoint(x: leftEdge, y: 0.0),position2:  CGPoint(x: rightEdge, y: 0.0))
             
-            
-            
+
             
             
         case PhysicsBitMasks().obstacle | PhysicsBitMasks().floor:
@@ -413,7 +410,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
             // do something with node or stop
-            node.physicsBody?.applyForce((CGVector(dx: 0, dy:self.downwardForce))
+            node.physicsBody?.applyForce((CGVector(dx: -300, dy:self.downwardForce))
             )
             return
         })
@@ -422,7 +419,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
             // do something with node or stop
-            node.physicsBody?.applyForce((CGVector(dx: 0, dy:self.downwardForce))
+            node.physicsBody?.applyForce((CGVector(dx: -600, dy:self.downwardForce))
             )
             return
         })
