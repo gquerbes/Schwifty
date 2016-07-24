@@ -52,7 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let bitMasks = PhysicsBitMasks()
 
     //game variables
-    var downwardForce : Int = -700
+    var downwardForce : Int = -400
     var powerUpCounter : Int = 0
     
     //dropped items
@@ -68,6 +68,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //load powerUps
         loadPowerUps()
+        
+        //clear high score
+//        userDefaults.setValue(0, forKey: "highScore")
+//        userDefaults.synchronize()
+
         
         ///Check if high score is on local storage and set it on game
         if let highScoreOnFile = userDefaults.value(forKey: "highScore") {
@@ -295,8 +300,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let rightEdge = self.paddle.size.width/2
             let leftEdge = rightEdge - self.paddle.size.width
             
+            
+            
             //play spark particle
             self.paddle.playSpark(type: "Obstacle", position1: CGPoint(x: leftEdge, y: 0.0),position2:  CGPoint(x: rightEdge, y: 0.0))
+            
+            
             
             
             
@@ -314,6 +323,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if paddleWidth <= 0{
             endGame()
         }
+        else if paddleWidth >= 400{
+            
+        }
+            
         else{
             //copy current position of paddle
             let paddlePosition = paddle.position
@@ -328,17 +341,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
  
     func endGame(){
+        //main menu
+        let menu = MainMenu(fileNamed: "MainMenu")!
+        menu.scaleMode = .aspectFill
+        let transition = SKTransition.flipHorizontal(withDuration: 1)
+        
         if currentScore > highScore{
+            menu.isNewHighScore = true
             highScore = currentScore
             //write high score to local storage
             userDefaults.setValue(highScore, forKey: "highScore")
             userDefaults.synchronize()
         }
-        
         //present main menu
-        let menu:GameScene = GameScene(fileNamed: "MainMenu")!
-        menu.scaleMode = .aspectFill
-        let transition = SKTransition.flipHorizontal(withDuration: 1)
         self.view?.presentScene(menu,transition: transition)
     }
     
