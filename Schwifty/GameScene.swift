@@ -38,7 +38,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // labels
     var currentScoreLabel: SKLabelNode!
-    var highScoreLabel: SKLabelNode!
     
     //score
     var currentScore = 0
@@ -52,13 +51,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let bitMasks = PhysicsBitMasks()
 
     //game variables
-    var downwardForce : Int = -400
-    var powerUpCounter : Int = 0
+     var powerUpCounter : Int = 0
     
     //dropped items
-    var obstacle = Obstacle()
-    var powerUps = [PowerUp]()
+    var powerUps = [FallingObject]()
     
+    //game stage/level
+//    var stage = 0
     
     
     /**
@@ -68,7 +67,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //load powerUps
         loadPowerUps()
-        
+
         //clear high score
 //        userDefaults.setValue(0, forKey: "highScore")
 //        userDefaults.synchronize()
@@ -76,9 +75,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         ///Check if high score is on local storage and set it on game
         if let highScoreOnFile = userDefaults.value(forKey: "highScore") {
-            /// do something here when a high score exists
             highScore = highScoreOnFile as! Int
-            print("highScore on file is: \(highScore)")
+//            print("highScore on file is: \(highScore)")
         }
         
         //wallpaper
@@ -109,114 +107,137 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setWallProperties()
         
         //score label
-        currentScoreLabel = SKLabelNode(fontNamed: "Ariel")
+        currentScoreLabel = SKLabelNode(fontNamed: "Chalkduster")
         //center location of screen
-        currentScoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
-        currentScoreLabel.fontSize = 65
+        currentScoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY/1.25)
+        currentScoreLabel.fontSize = 80
         currentScoreLabel.fontColor = SKColor.black()
         currentScoreLabel.zPosition = 1
         self.addChild(currentScoreLabel)
-        
+
+        beginDroppingPowerUps(delay: 2)
+        beginDroppingObstacles(delay: 5)
+        beginDroppingBonus(delay: 6)
 
         
-        // call and repeat action of presenting obstacles
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(dropObstacle),
-                SKAction.wait(forDuration: 2.5 )
-                ])
-            ))
-        
-        // call and repeat action of presenting powerUps
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(dropPowerUp),
-                SKAction.wait(forDuration: 0.4 )
-                ])
-            ))
-
-        // call and repeat action of increasing the downward force
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(increaseDownwardForce),
-                SKAction.wait(forDuration: 9.0 )
-                ])
-            ))
-        
-        // call and repeat action of increasing the downward force
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(addBonus),
-                SKAction.wait(forDuration: 6.1 )
-                ])
-            ))
     }
     
+    func beginDroppingObstacles(delay: Int){
+        let delayTime = DispatchTime.now() + .seconds(delay)
+        DispatchQueue.main.after(when: delayTime) {
+            
+          //call and repeat action of presenting obstacles
+           self.run(SKAction.repeatForever(
+                SKAction.sequence([
+                    SKAction.run(self.dropObstacle),
+                    SKAction.wait(forDuration: 2.5 )
+                    ])
+                ))
+        }
+    }
+    
+    func beginDroppingPowerUps(delay: Int){
+        let delayTime = DispatchTime.now() + .seconds(delay)
+        DispatchQueue.main.after(when: delayTime) {
+            self.run(SKAction.repeatForever(
+                SKAction.sequence([
+                    SKAction.run(self.dropPowerUp),
+                    SKAction.wait(forDuration: 0.4 )
+                    ])
+                ))
+        }
+    }
+    
+    func beginDroppingBonus(delay: Int){
+        let delayTime = DispatchTime.now() + .seconds(delay)
+        DispatchQueue.main.after(when: delayTime) {
+            // call and repeat action of increasing the downward force
+            self.run(SKAction.repeatForever(
+                SKAction.sequence([
+                    SKAction.run(self.addBonus),
+                    SKAction.wait(forDuration: 6.1 )
+                    ])
+                ))
+        }
+    }
+    
+    
+    
+    func fallingForce() -> CGVector{
+        let randomInRange = GKRandomDistribution(lowestValue: 1, highestValue: 5)
+        let type = randomInRange.nextInt()
+        
+        var fallingForce : CGVector
+        switch type{
+        case 1:
+            fallingForce = CGVector(dx: 0, dy: -50000)
+        case 2:
+            fallingForce  = CGVector(dx: -50000, dy: -50000)
+        case 3:
+            fallingForce  = CGVector(dx: 50000, dy: -50000)
+        case 4:
+            fallingForce  = CGVector(dx: -30000, dy: -50000)
+        case 5:
+            fallingForce  = CGVector(dx: -30000, dy: -50000)
+        default:
+            fatalError("invalid stage")
+        }
+        return fallingForce
+    }
 
     func loadPowerUps(){
         for _ in 0..<10{
-            let powerUp = PowerUp()
+            let powerUp = FallingObject(type: "PowerUp")
             powerUp.zPosition = 1
             powerUp.name = "powerUp"
             powerUps.append(powerUp)
         }
     }
 
-    
     func dropPowerUp(){
-        incrementPowerUpCounter()
-        let powerUp = powerUps[powerUpCounter]
-        powerUp.position = randomXInView()
-        if powerUp.parent != nil {
-            powerUp.removeFromParent()
-        }
-            self.addChild(powerUp)
-    }
-
-    func incrementPowerUpCounter(){
-        //print("powerUpCount \(powerUps.count)")
         if powerUpCounter < powerUps.count - 1 {
             powerUpCounter += 1
         }
         else{
             powerUpCounter = 0
         }
+        let powerUp = powerUps[powerUpCounter]
+        powerUp.position = randomXInView()
+        if powerUp.parent != nil {
+            powerUp.removeFromParent()
+        }
+        self.addChild(powerUp)
+        powerUp.physicsBody?.applyForce(fallingForce())
+
     }
     
+ 
+    
     func dropObstacle(){
+        let obstacle = FallingObject(type: "Obstacle")
         obstacle.position = randomXInView()
         obstacle.zPosition = 1
         self.addChild(obstacle)
+        obstacle.physicsBody?.applyForce(fallingForce())
         obstacle.name = "obstacle"
     }
 
     
+  
 
-    /**
-      adds powerUp object to scene
-    */
-//    func addPowerUp(){
-//        //create powerUp from class
-//        let powerUp = PowerUp()
-//        //set power up to random location
-//        powerUp.position = randomXInView()
-//        powerUp.zPosition = 1
-//        self.addChild(powerUp)
-//        powerUp.name = "powerUp"
-//        
-//        updateScore()
-//    }
+
     
     /**
      adds bonus object to scene
      */
     func addBonus(){
         //create powerUp from class
-        let bonus = Bonus()
+        let bonus = FallingObject(type: "Bonus")
         //set power up to random location
         bonus.position = randomXInView()
         bonus.zPosition = 1
         self.addChild(bonus)
+        bonus.physicsBody?.applyForce(fallingForce())
         bonus.name = "bonus"
     }
     
@@ -226,22 +247,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         currentScore += increment
         currentScoreLabel.text = String(currentScore)
     }
-    /**
-     - Returns:randomized X coordinate within frame at Y position 2000
-    */
-//    func randomXInView() -> CGPoint{
-//        let sizeX = Int(self.frame.maxX + 15)
-//        let randomX = CGFloat(Int(arc4random()) % sizeX)
-//        return CGPoint(x: randomX, y: 2000)
-//        
-//    }
     
-    /**
+       /**
      - Returns:randomized X coordinate within frame at Y position 2000
      */
     func randomXInView() -> CGPoint{
         let randomXPosition = GKShuffledDistribution(lowestValue: Int(self.frame.minX), highestValue: Int(self.frame.maxX))
-        return CGPoint(x:randomXPosition.nextInt(), y: 2000)
+        return CGPoint(x:randomXPosition.nextInt(), y: Int(self.frame.maxY))
     
     }
   
@@ -283,7 +295,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let bonus = (contact.bodyA.categoryBitMask == bitMasks.bonus) ? contact.bodyA : contact.bodyB
             updateScore(increment: 5)
             updatePaddleSize(amount: 100)
+           
             bonus.node?.removeFromParent()
+            
+            let scale = SKAction.scale(by: 2, duration: 1)
+            let unscale = SKAction.scale(by: 0.5, duration: 1)
+            let sequence = SKAction.sequence([scale,unscale])
+            
+            currentScoreLabel.run(sequence)
             
             
         case PhysicsBitMasks().bonus | PhysicsBitMasks().floor:
@@ -354,32 +373,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view?.presentScene(menu,transition: transition)
     }
     
-    
-    func increaseDownwardForce(){
-        downwardForce -= 500
-    }
-
-    
-    
  
     
     func setWallProperties(){
         //floor physics
-        floor.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 1080, height: 100))
+        floor.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: 100))
         floor.physicsBody?.categoryBitMask = bitMasks.floor
         floor.physicsBody?.contactTestBitMask = bitMasks.powerUp | bitMasks.obstacle | bitMasks.bonus
         floor.physicsBody?.affectedByGravity = false
         floor.physicsBody?.isDynamic = false
         
         //left wall physics
-        leftWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
+        leftWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: self.frame.height))
         leftWall.physicsBody?.categoryBitMask = bitMasks.walls
         leftWall.physicsBody?.collisionBitMask = bitMasks.paddle
         leftWall.physicsBody?.affectedByGravity = false
         leftWall.physicsBody?.isDynamic = false
 
         //right wall physics
-        rightWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 2048))
+        rightWall.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: self.frame.height))
         rightWall.physicsBody?.categoryBitMask = bitMasks.walls
         rightWall.physicsBody?.collisionBitMask = bitMasks.paddle
         rightWall.physicsBody?.affectedByGravity = false
@@ -406,32 +418,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let move = SKAction.moveTo(x: location, duration: 0.05)//adjust tracking speed
         paddle.run(move)
        
-        self.enumerateChildNodes(withName: "powerUp", using: {
-            
-            (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
-            // do something with node or stop
-            node.physicsBody?.applyForce((CGVector(dx: -300, dy:self.downwardForce))
-            )
-            return
-        })
-    
-        self.enumerateChildNodes(withName: "bonus", using: {
-            
-            (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
-            // do something with node or stop
-            node.physicsBody?.applyForce((CGVector(dx: -600, dy:self.downwardForce))
-            )
-            return
-        })
-        
-        self.enumerateChildNodes(withName: "obstacle", using: {
-            
-            (node: SKNode!, stop: UnsafeMutablePointer <ObjCBool>) -> Void in
-            // do something with node or stop
-            node.physicsBody?.applyForce((CGVector(dx: 0, dy:self.downwardForce))
-            )
-            return
-        })
     }
 }
 

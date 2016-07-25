@@ -11,19 +11,17 @@
 		747683361D43F59100C70C79 /* ObstacleContactSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 747683351D43F59100C70C79 /* ObstacleContactSpark.sks */; };
 		748BF3741D42E8C6000527F2 /* PowerUpContactSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 748BF3721D42E8C6000527F2 /* PowerUpContactSpark.sks */; };
 		748BF3751D42E8C6000527F2 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 748BF3731D42E8C6000527F2 /* spark.png */; };
-		748DDB281D395D3C00D0C853 /* Bonus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748DDB271D395D3C00D0C853 /* Bonus.swift */; };
 		749B4B581D2AE5C20063CAED /* Paddle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B571D2AE5C20063CAED /* Paddle.swift */; };
 		749B4B5A1D2C1C5E0063CAED /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = 749B4B591D2C1C5E0063CAED /* MainMenu.sks */; };
 		749B4B5C1D2C1C820063CAED /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B5B1D2C1C820063CAED /* MainMenu.swift */; };
-		749B4B5E1D2C27C40063CAED /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B5D1D2C27C40063CAED /* Obstacle.swift */; };
 		749B4B601D2C292B0063CAED /* PhysicsBitMasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B5F1D2C292B0063CAED /* PhysicsBitMasks.swift */; };
-		749B4B681D2C310A0063CAED /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749B4B671D2C310A0063CAED /* PowerUp.swift */; };
 		74A6AD3C1D2300C300B2BFD6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A6AD3B1D2300C300B2BFD6 /* AppDelegate.swift */; };
 		74A6AD3E1D2300C300B2BFD6 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 74A6AD3D1D2300C300B2BFD6 /* GameScene.sks */; };
 		74A6AD401D2300C300B2BFD6 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A6AD3F1D2300C300B2BFD6 /* GameScene.swift */; };
 		74A6AD421D2300C300B2BFD6 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A6AD411D2300C300B2BFD6 /* GameViewController.swift */; };
 		74A6AD451D2300C300B2BFD6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A6AD431D2300C300B2BFD6 /* Main.storyboard */; };
 		74A6AD4A1D2300C300B2BFD6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A6AD481D2300C300B2BFD6 /* LaunchScreen.storyboard */; };
+		74BAE0F81D4689E000384447 /* FallingObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BAE0F71D4689E000384447 /* FallingObject.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,13 +29,10 @@
 		747683351D43F59100C70C79 /* ObstacleContactSpark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ObstacleContactSpark.sks; sourceTree = "<group>"; };
 		748BF3721D42E8C6000527F2 /* PowerUpContactSpark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = PowerUpContactSpark.sks; sourceTree = "<group>"; };
 		748BF3731D42E8C6000527F2 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
-		748DDB271D395D3C00D0C853 /* Bonus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bonus.swift; sourceTree = "<group>"; };
 		749B4B571D2AE5C20063CAED /* Paddle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Paddle.swift; sourceTree = "<group>"; };
 		749B4B591D2C1C5E0063CAED /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		749B4B5B1D2C1C820063CAED /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
-		749B4B5D1D2C27C40063CAED /* Obstacle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
 		749B4B5F1D2C292B0063CAED /* PhysicsBitMasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysicsBitMasks.swift; sourceTree = "<group>"; };
-		749B4B671D2C310A0063CAED /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
 		74A6AD381D2300C300B2BFD6 /* Schwifty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Schwifty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		74A6AD3B1D2300C300B2BFD6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		74A6AD3D1D2300C300B2BFD6 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -46,6 +41,7 @@
 		74A6AD441D2300C300B2BFD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		74A6AD491D2300C300B2BFD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		74A6AD4B1D2300C300B2BFD6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		74BAE0F71D4689E000384447 /* FallingObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FallingObject.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,9 +79,7 @@
 		749B4B691D2C31400063CAED /* Objects */ = {
 			isa = PBXGroup;
 			children = (
-				749B4B671D2C310A0063CAED /* PowerUp.swift */,
-				748DDB271D395D3C00D0C853 /* Bonus.swift */,
-				749B4B5D1D2C27C40063CAED /* Obstacle.swift */,
+				74BAE0F71D4689E000384447 /* FallingObject.swift */,
 				749B4B571D2AE5C20063CAED /* Paddle.swift */,
 				749B4B5F1D2C292B0063CAED /* PhysicsBitMasks.swift */,
 				747683371D43F59B00C70C79 /* Particles */,
@@ -205,10 +199,8 @@
 			files = (
 				749B4B5C1D2C1C820063CAED /* MainMenu.swift in Sources */,
 				74A6AD401D2300C300B2BFD6 /* GameScene.swift in Sources */,
-				749B4B681D2C310A0063CAED /* PowerUp.swift in Sources */,
+				74BAE0F81D4689E000384447 /* FallingObject.swift in Sources */,
 				749B4B601D2C292B0063CAED /* PhysicsBitMasks.swift in Sources */,
-				749B4B5E1D2C27C40063CAED /* Obstacle.swift in Sources */,
-				748DDB281D395D3C00D0C853 /* Bonus.swift in Sources */,
 				749B4B581D2AE5C20063CAED /* Paddle.swift in Sources */,
 				74A6AD421D2300C300B2BFD6 /* GameViewController.swift in Sources */,
 				74A6AD3C1D2300C300B2BFD6 /* AppDelegate.swift in Sources */,
