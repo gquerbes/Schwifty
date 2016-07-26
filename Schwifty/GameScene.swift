@@ -342,7 +342,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if paddleWidth >= 400{
             
         }
-            
         else{
             //copy current position of paddle
             let paddlePosition = paddle.position

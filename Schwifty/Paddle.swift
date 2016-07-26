@@ -21,8 +21,8 @@ class Paddle : SKSpriteNode  {
     
     init(width: CGFloat, height: CGFloat){
         //declare texture for paddle
-        let texture = SKTexture(imageNamed: "paddle_2_100x100")
-        
+        //let texture = SKTexture(imageNamed: "paddle_2_100x100")
+        let texture = SKTexture()
         ///particle location
         let powerUpContactSparkPath = Bundle.main.pathForResource("PowerUpContactSpark", ofType: "sks")
         let obstacleContactSparkPath = Bundle.main.pathForResource("ObstacleContactSpark", ofType: "sks")
@@ -37,8 +37,20 @@ class Paddle : SKSpriteNode  {
        
         
         //set texture, color and size
-        super.init(texture: texture, color: SKColor.clear(), size: CGSize(width: width, height: height))
-
+        super.init(texture: texture, color: SKColor.red(), size: CGSize(width: width, height: height))
+        switch width {
+        case let x where x <= 150 :
+            self.color = SKColor.red()
+        case let x where x <= 250 :
+            self.color = SKColor.blue()
+        case let x where x <= 450 :
+            self.color = SKColor.green()
+        default:
+            fatalError("size not in range")
+        }
+        
+        self.colorBlendFactor = 1.0
+        
         // 
 //         self.addChild(sparkParticle)
         
