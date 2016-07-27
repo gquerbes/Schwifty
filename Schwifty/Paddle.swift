@@ -21,7 +21,6 @@ class Paddle : SKSpriteNode  {
     
     init(width: CGFloat, height: CGFloat){
         //declare texture for paddle
-        //let texture = SKTexture(imageNamed: "paddle_2_100x100")
         let texture = SKTexture()
         ///particle location
         let powerUpContactSparkPath = Bundle.main.pathForResource("PowerUpContactSpark", ofType: "sks")
@@ -51,9 +50,6 @@ class Paddle : SKSpriteNode  {
         
         self.colorBlendFactor = 1.0
         
-        // 
-//         self.addChild(sparkParticle)
-        
         //set physics body of paddle
         physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: width, height: height))
   
@@ -63,7 +59,6 @@ class Paddle : SKSpriteNode  {
         physicsBody?.contactTestBitMask =  bitMasks.powerUp | bitMasks.obstacle | bitMasks.bonus
         //sprites that will physically react to collision
         physicsBody?.collisionBitMask = bitMasks.walls
-        
         physicsBody?.affectedByGravity = false
         physicsBody?.isDynamic = true
         physicsBody?.allowsRotation = false

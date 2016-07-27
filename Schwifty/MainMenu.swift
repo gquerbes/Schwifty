@@ -13,7 +13,7 @@ class MainMenu: SKScene {
     //user Defaults
     let userDefaults = UserDefaults.standard
     var isNewHighScore = false
-
+//bs
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let game:GameScene = GameScene(fileNamed: "GameScene")!
